@@ -4,3 +4,229 @@
 # Accept: application/json
 
 ###
+
+### V1. Empty body
+POST {{baseUrl}}/api/employees
+Content-Type: application/json
+
+{}
+
+### V2. Bad formats and ranges
+POST {{baseUrl}}/api/employees
+Content-Type: application/json
+
+{
+  "employeeNumber": "EMP 1003!",
+  "firstName": "Ana",
+  "lastName": "Reyes",
+  "email": "not-an-email",
+  "phoneNumber": "call me",
+  "dateOfBirth": "1992-03-10",
+  "hireDate": "2021-01-01",
+  "position": "Analyst",
+  "salary": -500.555,
+  "departmentId": 0
+}
+
+### V3. Too young on hire date
+POST {{baseUrl}}/api/employees
+Content-Type: application/json
+
+{
+  "employeeNumber": "EMP-1003",
+  "firstName": "Young",
+  "lastName": "Hire",
+  "email": "young.hire@example.com",
+  "dateOfBirth": "2010-01-01",
+  "hireDate": "2020-01-01",
+  "position": "Intern",
+  "salary": 10000,
+  "departmentId": 1
+}
+
+### V4. Date of birth in the future
+POST {{baseUrl}}/api/employees
+Content-Type: application/json
+
+{
+  "employeeNumber": "EMP-1003",
+  "firstName": "Future",
+  "lastName": "Person",
+  "email": "future.person@example.com",
+  "dateOfBirth": "2099-01-01",
+  "hireDate": "2026-01-01",
+  "position": "Analyst",
+  "salary": 30000,
+  "departmentId": 1
+}
+
+### V5. Update without isActive
+PUT {{baseUrl}}/api/employees/1
+Content-Type: application/json
+
+{
+  "firstName": "Juan",
+  "lastName": "Dela Cruz",
+  "email": "juan.delacruz@example.com",
+  "dateOfBirth": "1990-01-15",
+  "hireDate": "2020-06-01",
+  "position": "Software Developer",
+  "salary": 75000,
+  "departmentId": 2
+}
+
+### V6. Department with blank name
+POST {{baseUrl}}/api/departments
+Content-Type: application/json
+
+{
+  "departmentName": "   "
+}
+
+### V7. Invalid query parameter
+GET {{baseUrl}}/api/employees?departmentId=0
+
+### V8. Malformed date (built-in binding validation)
+POST {{baseUrl}}/api/employees
+Content-Type: application/json
+
+{
+  "employeeNumber": "EMP-1003",
+  "dateOfBirth": "not-a-date"
+}
+
+### V9. Valid request still works
+POST {{baseUrl}}/api/employees
+Content-Type: application/json
+
+{
+  "employeeNumber": "EMP-1003",
+  "firstName": "Ben",
+  "lastName": "Cruz",
+  "email": "ben.cruz@example.com",
+  "phoneNumber": "+63 917 555 0101",
+  "dateOfBirth": "1995-05-01",
+  "hireDate": "2022-01-01",
+  "position": "QA Engineer",
+  "salary": 45000.50,
+  "departmentId": 1
+}
+
+### L1. Valid login
+# @name login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "DevPassword123!"
+}
+
+### L2. Wrong password
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "WrongPassword!"
+}
+
+### L3. Unknown user
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "nobody",
+  "password": "WrongPassword!"
+}
+
+### L4. Username in different case
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "ADMIN",
+  "password": "DevPassword123!"
+}
+
+### L5. Empty body
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{}
+
+### A1. /me without a token
+GET {{baseUrl}}/api/auth/me
+
+### A2. Log in (run this before A3)
+# @name login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "DevPassword123!"
+}
+
+### A3. /me with the token
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{login.response.body.$.accessToken}}
+
+### A4. Tampered token (last character changed)
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{login.response.body.$.accessToken}}x
+
+### A5. Existing endpoints are still public (until Step 6)
+GET {{baseUrl}}/api/employees?pageSize=1
+
+
+### R0a. Admin login
+# @name adminLogin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{ "username": "admin", "password": "DevPassword123!" }
+
+### R0b. User login
+# @name userLogin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{ "username": "jdoe", "password": "UserPassword123!" }
+
+### R1. Anonymous read
+GET {{baseUrl}}/api/employees?pageSize=1
+
+### R2. User read
+GET {{baseUrl}}/api/employees?pageSize=1
+Authorization: Bearer {{userLogin.response.body.$.accessToken}}
+
+### R3. User create (forbidden)
+POST {{baseUrl}}/api/departments
+Authorization: Bearer {{userLogin.response.body.$.accessToken}}
+Content-Type: application/json
+
+{ "departmentName": "Should Not Exist" }
+
+### R4. User delete (forbidden, and doesn't reveal whether id exists)
+DELETE {{baseUrl}}/api/employees/9999
+Authorization: Bearer {{userLogin.response.body.$.accessToken}}
+
+### R5. Admin create
+# @name adminCreate
+POST {{baseUrl}}/api/departments
+Authorization: Bearer {{adminLogin.response.body.$.accessToken}}
+Content-Type: application/json
+
+{ "departmentName": "Authorization Test" }
+
+### R6. Admin delete
+DELETE {{baseUrl}}/api/departments/{{adminCreate.response.body.$.id}}
+Authorization: Bearer {{adminLogin.response.body.$.accessToken}}
+
+### R7. User /me
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{userLogin.response.body.$.accessToken}}
+
+### R8. OpenAPI document is still anonymous
+GET {{baseUrl}}/openapi/v1.json
