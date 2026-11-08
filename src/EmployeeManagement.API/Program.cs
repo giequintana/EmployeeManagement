@@ -75,9 +75,10 @@ try
     app.UseSerilogRequestLogging(options =>
     {
         options.MessageTemplate =
-            "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0} ms for {UserName} from {ClientIp}";
+            "HTTP {RequestMethod} {RequestHost}{RequestPath} responded {StatusCode} in {Elapsed:0} ms for {UserName} from {ClientIp}";
         options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
         {
+            diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value);
             diagnosticContext.Set("UserName", httpContext.User.Identity?.Name ?? "anonymous");
             diagnosticContext.Set("ClientIp", httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown");
         };

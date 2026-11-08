@@ -29,9 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="appsettings.Production.json">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </Content>
+    <Content Update="appsettings.Production.json" CopyToPublishDirectory="PreserveNewest" />
     <Content Update="appsettings.Production.example.json" CopyToPublishDirectory="Never" />
   </ItemGroup>
 
