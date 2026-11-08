@@ -7,3 +7,5 @@ if (!apiBaseUrl) {
 export const config = Object.freeze({
   apiBaseUrl,
 });
+
+const allowedProtocols = ['https:', 'http:'];
