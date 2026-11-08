@@ -1,8 +1,17 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="configuration.md" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/EmployeeManagement.API/EmployeeManagement.API.csproj" />
     <Project Path="src/EmployeeManagement.Application/EmployeeManagement.Application.csproj" />
     <Project Path="src/EmployeeManagement.Core/EmployeeManagement.Core.csproj" />
     <Project Path="src/EmployeeManagement.Infrastructure/EmployeeManagement.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <File Path="perf-cleanup.sql" />
+    <File Path="perf-queries.sql" />
+    <File Path="perf-seed.sql" />
+    <Project Path="EmployeeManagement.API.IntegrationTests/EmployeeManagement.API.IntegrationTests.csproj" Id="c743a6d5-1631-4046-8d75-046948936f56" />
   </Folder>
 </Solution>

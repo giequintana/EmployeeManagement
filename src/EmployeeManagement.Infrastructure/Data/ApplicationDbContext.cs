@@ -3,6 +3,7 @@ using EmployeeManagement.Application.Interfaces;
 using EmployeeManagement.Core.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using EmployeeManagement.Infrastructure.Data.Converters;
 
 namespace EmployeeManagement.Infrastructure.Data;
 
@@ -14,6 +15,12 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Department> Departments => Set<Department>();
 
     public DbSet<ApplicationUser> Users => Set<ApplicationUser>();
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Properties<DateTime>().HaveConversion<UtcDateTimeConverter>();
+        configurationBuilder.Properties<DateTime?>().HaveConversion<UtcDateTimeConverter>();
+    }
 
     async Task<int> IUnitOfWork.SaveChangesAsync(CancellationToken cancellationToken)
     {

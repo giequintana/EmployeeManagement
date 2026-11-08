@@ -54,6 +54,9 @@ internal sealed class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
 
         builder.HasIndex(e => new { e.LastName, e.FirstName });
 
+        builder.HasIndex(e => new { e.DepartmentId, e.LastName, e.FirstName })
+            .IncludeProperties(e => e.IsActive);
+
         builder.HasOne(e => e.Department)
             .WithMany(d => d.Employees)
             .HasForeignKey(e => e.DepartmentId)

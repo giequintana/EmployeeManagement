@@ -2,7 +2,8 @@
 using EmployeeManagement.Application.Interfaces;
 using EmployeeManagement.Core.Enums;
 using EmployeeManagement.Infrastructure.Authentication;
-
+using EmployeeManagement.API.Extensions;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -13,10 +14,12 @@ namespace EmployeeManagement.API.Controllers;
 public sealed class AuthController(IAuthService authService) : ApiControllerBase
 {
     [AllowAnonymous]
+    [EnableRateLimiting(RateLimitingExtensions.LoginPolicy)]
     [HttpPost("login")]
     [ProducesResponseType<LoginResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status429TooManyRequests)]
     public async Task<IActionResult> Login(LoginRequest request, CancellationToken cancellationToken)
     {
         var result = await authService.LoginAsync(request, cancellationToken);

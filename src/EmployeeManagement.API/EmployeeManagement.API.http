@@ -230,3 +230,21 @@ Authorization: Bearer {{userLogin.response.body.$.accessToken}}
 
 ### R8. OpenAPI document is still anonymous
 GET {{baseUrl}}/openapi/v1.json
+
+
+### DB1. Dashboard as admin
+GET {{baseUrl}}/api/dashboard/summary
+Authorization: Bearer {{adminLogin.response.body.$.accessToken}}
+
+### DB2. Dashboard as user
+GET {{baseUrl}}/api/dashboard/summary
+Authorization: Bearer {{userLogin.response.body.$.accessToken}}
+
+### DB3. Anonymous
+GET {{baseUrl}}/api/dashboard/summary
+
+### S1. Repeated failed logins
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{ "username": "admin", "password": "wrong" }

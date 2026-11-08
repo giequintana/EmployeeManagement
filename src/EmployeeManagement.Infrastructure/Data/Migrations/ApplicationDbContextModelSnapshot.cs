@@ -96,6 +96,43 @@ namespace EmployeeManagement.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Departments", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DepartmentName = "Human Resources",
+                            Description = "Recruitment, employee relations, and benefits"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DepartmentName = "Information Technology",
+                            Description = "Software development and infrastructure"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DepartmentName = "Finance",
+                            Description = "Accounting, payroll, and budgeting"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DepartmentName = "Operations",
+                            Description = "Day-to-day business operations"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DepartmentName = "Sales",
+                            Description = "Customer acquisition and account management"
+                        });
                 });
 
             modelBuilder.Entity("EmployeeManagement.Core.Entities.Employee", b =>
@@ -161,8 +198,6 @@ namespace EmployeeManagement.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DepartmentId");
-
                     b.HasIndex("Email")
                         .IsUnique();
 
@@ -170,6 +205,10 @@ namespace EmployeeManagement.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.HasIndex("LastName", "FirstName");
+
+                    b.HasIndex("DepartmentId", "LastName", "FirstName");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("DepartmentId", "LastName", "FirstName"), new[] { "IsActive" });
 
                     b.ToTable("Employees", null, t =>
                         {
